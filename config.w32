@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("http_parser", "for http_parser support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("http_parser", "enable http_parser support", "no");
+
+if (PHP_HTTP_PARSER != "no") {
+	EXTENSION("http_parser", "http_parser.c");
+}
+
