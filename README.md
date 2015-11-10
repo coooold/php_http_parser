@@ -118,6 +118,4 @@ class HttpClientFuture implements FutureIntf {
 
 
 ## 其他
-经测试，扩展版本比纯php版性能不强多少。也可以理解为，http协议主要解析的时间都在header部分，后面其实没什么了。。。
-就当练手吧。
-
+http_test.php是这个类的纯php版，改写字腾讯tsf框架http client。经测试，c扩展版本解析速度可以达到纯php版的3倍。
