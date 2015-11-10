@@ -167,9 +167,9 @@ typedef struct{
 	size_t len;
 } hp_buff;
 
+http_parser_settings *settings;
 
 typedef struct {
-	http_parser_settings settings;
 	http_parser parser;
 	hp_buff body;
 	hp_buff header;
@@ -180,10 +180,10 @@ typedef struct {
 
 void hp_buff_init(hp_buff *buff){
 	hp_debug("\thp_buff_init()");
-	buff->buff = (char*)malloc(1024*16 * sizeof(char*));
+	buff->buff = (char*)malloc(1024*4*sizeof(char*));
 	buff->len = 0;
-	buff->size = 1024*16 * sizeof(char*);
-	bzero(buff->buff, buff->size);
+	buff->size = 1024*4*sizeof(char*);
+	//bzero(buff->buff, buff->size);
 }
 
 void hp_buff_concat(hp_buff *buff, const char* str, size_t str_len){
@@ -194,7 +194,7 @@ void hp_buff_concat(hp_buff *buff, const char* str, size_t str_len){
 		char* old_buff = buff->buff;
 		char* new_buff = (char*)realloc(old_buff, new_size);
 		if(!new_buff)return;
-		bzero(new_buff + old_size, new_size); 
+		//bzero(new_buff + old_size, new_size); 
 		buff->buff = new_buff;
 		buff->size = new_size;
 	}
@@ -281,15 +281,15 @@ int _on_body_cb(http_parser* parser, const char *at, size_t length){
 
 		cb = zend_read_property(Z_OBJCE_P(instance), instance, ZEND_STRL("bodyCallback"), 1 TSRMLS_DC);
 
-		char *func_name = NULL; 
-		if(zend_is_callable(cb, 0, &func_name TSRMLS_CC)){ 
+		//char *func_name = NULL; 
+		//if(zend_is_callable(cb, 0, &func_name TSRMLS_CC)){ 
+		if(cb->type != IS_NULL){
 			call_user_function_ex(NULL, NULL, cb, &retval, 1, args, 0, NULL TSRMLS_CC);
 			ret = (int)Z_LVAL_P(retval);
 			zval_ptr_dtor(&retval);
 		}
-		efree(func_name);
+		//efree(func_name);
 		zval_ptr_dtor(buff);
-//		efree(buff);
 	}
 	hp_debug("_on_ body_cb() end");
 	return 0;
@@ -313,6 +313,18 @@ PHP_MINIT_FUNCTION(http_parser)
 	zend_declare_property_null(http_parser_ce, ZEND_STRL("body"), ZEND_ACC_PRIVATE TSRMLS_CC);
 	
 	hp_object_init();
+
+	settings = (http_parser_settings*)pemalloc(sizeof(http_parser_settings), 1);
+	settings->on_message_begin = NULL;
+	settings->on_header_field = NULL;
+	settings->on_header_value = NULL;
+	settings->on_url = NULL;
+	settings->on_status = NULL;
+	settings->on_body = _on_body_cb;
+	settings->on_headers_complete = NULL;
+	settings->on_message_complete = NULL;
+	settings->on_chunk_header = NULL;
+	settings->on_chunk_complete = NULL;
 	
 	return SUCCESS;
 }
@@ -345,16 +357,6 @@ PHP_METHOD(HttpParser, __construct){
 	hp_context_t *hp_ctx;
 	hp_ctx = (hp_context_t*)pemalloc(sizeof(hp_context_t), 1);
 
-	hp_ctx->settings.on_message_begin = NULL;
-	hp_ctx->settings.on_header_field = NULL;
-	hp_ctx->settings.on_header_value = NULL;
-	hp_ctx->settings.on_url = NULL;
-	hp_ctx->settings.on_status = NULL;
-	hp_ctx->settings.on_body = _on_body_cb;
-	hp_ctx->settings.on_headers_complete = NULL;
-	hp_ctx->settings.on_message_complete = NULL;
-	hp_ctx->settings.on_chunk_header = NULL;
-	hp_ctx->settings.on_chunk_complete = NULL;
 	hp_ctx->this = getThis();
 	hp_buff_init(&hp_ctx->body);
 	hp_buff_init(&hp_ctx->header);
@@ -415,7 +417,7 @@ PHP_METHOD(HttpParser, execute){
 	}
 
 	hp_ctx = (hp_context_t*)hp_object_get(getThis());
-	nparsed = http_parser_execute(&(hp_ctx->parser), &(hp_ctx->settings), buff, (size_t)buff_len);
+	nparsed = http_parser_execute(&(hp_ctx->parser), settings, buff, (size_t)buff_len);
 	
 	ZVAL_LONG(return_value, nparsed);
 
@@ -441,3 +443,4 @@ PHP_METHOD(HttpParser, execute){
  * vim600: noet sw=4 ts=4 fdm=marker
  * vim<600: noet sw=4 ts=4
  */
+
