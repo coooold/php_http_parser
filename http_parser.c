@@ -181,7 +181,7 @@ typedef struct {
 
 void hp_buff_init(hp_buff *buff){
 	hp_debug("\thp_buff_init()");
-	buff->buff = (char*)malloc(1024*4*sizeof(char*));
+	buff->buff = (char*)emalloc(1024*4*sizeof(char*));
 	buff->len = 0;
 	buff->size = 1024*4*sizeof(char*);
 	//bzero(buff->buff, buff->size);
@@ -193,7 +193,7 @@ void hp_buff_concat(hp_buff *buff, const char* str, size_t str_len){
 		size_t old_size = buff->size;
 		size_t new_size = old_size*2;
 		char* old_buff = buff->buff;
-		char* new_buff = (char*)realloc(old_buff, new_size);
+		char* new_buff = (char*)erealloc(old_buff, new_size);
 		if(!new_buff)return;
 		//bzero(new_buff + old_size, new_size); 
 		buff->buff = new_buff;
@@ -206,7 +206,7 @@ void hp_buff_concat(hp_buff *buff, const char* str, size_t str_len){
 
 void hp_buff_dtor(hp_buff *buff){
 	hp_debug("\thp_buff_dtor()");
-	free(buff->buff);
+	efree(buff->buff);
 	buff->size = 0;
 	buff->len = 0;
 }
@@ -343,7 +343,7 @@ ZEND_GET_MODULE(http_parser)
 	PHP_METHOD(HttpParser, __construct){
 		hp_debug("HttpParser::__construct() start");
 		hp_context_t *hp_ctx;
-		hp_ctx = (hp_context_t*)malloc(sizeof(hp_context_t));
+		hp_ctx = (hp_context_t*)emalloc(sizeof(hp_context_t));
 		hp_ctx->done = 0;
 		hp_ctx->this = getThis();
 		hp_buff_init(&hp_ctx->body);
@@ -363,7 +363,7 @@ PHP_METHOD(HttpParser, __destruct){
 	hp_ctx = (hp_context_t*)hp_object_get(getThis());
 	hp_buff_dtor(&hp_ctx->body);
 	hp_buff_dtor(&hp_ctx->header);
-	free(hp_ctx);
+	efree(hp_ctx);
 	hp_debug("HttpParser::__destruct() end");
 }
 
