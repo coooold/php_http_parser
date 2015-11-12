@@ -55,13 +55,6 @@ foreach($buffs as $buff){
 class HttpClientFuture implements FutureIntf {
 	protected $url = null;
 	protected $post = null;
-
-	public $rspHeaders = array();		//返回头信息
-	public $body = '';
-	
-	protected $buffer = '';
-	protected $isFinish = false;
-	protected $trunk_length = 0;
 	
 	protected $proxy = false;
 	
@@ -78,10 +71,7 @@ class HttpClientFuture implements FutureIntf {
 		if(!isset($urlInfo ['port']))$urlInfo ['port'] = 80;
 		
 		$httpParser = new \HttpParser();
-		$httpParser->on('body', function($data)use(&$promise){
-			$promise->accept(['http_data' => $data]);
-		});
-		
+	
 		$cli->on ( "connect", function ($cli)use($urlInfo){
 			$host = $urlInfo['host'];
 			if($urlInfo['port'])$host .= ':'.$urlInfo['port'];
@@ -94,8 +84,12 @@ class HttpClientFuture implements FutureIntf {
 			$req = implode('', $req);
 			$cli->send ( $req );
 		} );
-		$cli->on ( "receive", function ($cli, $data = "") use(&$httpParser) {
-			$httpParser->execute($data);
+		$cli->on ( "receive", function ($cli, $data = "") use(&$httpParser, &$promise) {
+			$ret = $httpParser->execute($data);
+			if($ret !== false){
+				$cli->close();
+				$promise->accept(['http_data'=>$ret]);
+			}
 		} );
 		$cli->on ( "error", function ($cli) use(&$promise) {
 			$promise->reject ();
