@@ -53,32 +53,6 @@ static int le_http_parser;
    */
 /* }}} */
 
-/* Remove the following function when you have successfully modified config.m4
-   so that your module can be compiled into PHP, it exists only for testing
-   purposes. */
-
-/* Every user-visible function in PHP should document itself in the source */
-/* {{{ proto string confirm_http_parser_compiled(string arg)
-   Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(confirm_http_parser_compiled)
-{
-	char *arg = NULL;
-	int arg_len, len;
-	char *strg;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
-		return;
-	}
-
-	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "http_parser", arg);
-	RETURN_STRINGL(strg, len, 0);
-}
-/* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
-   follow this convention for the convenience of others editing your code.
-   */
 
 
 /* {{{ php_http_parser_init_globals
@@ -94,13 +68,13 @@ PHP_FUNCTION(confirm_http_parser_compiled)
 
 
 
-	ZEND_BEGIN_ARG_INFO(arg_http_parser_on, 0)
-	ZEND_ARG_INFO(0, event)
-	ZEND_ARG_INFO(0, callback)
+ZEND_BEGIN_ARG_INFO(arg_http_parser_on, 0)
+ZEND_ARG_INFO(0, event)
+ZEND_ARG_INFO(0, callback)
 ZEND_END_ARG_INFO()
 
-	ZEND_BEGIN_ARG_INFO(arg_http_parser_execute, 0)
-	ZEND_ARG_INFO(0, buff)
+ZEND_BEGIN_ARG_INFO(arg_http_parser_execute, 0)
+ZEND_ARG_INFO(0, buff)
 ZEND_END_ARG_INFO()
 
 	/* {{{ PHP_MSHUTDOWN_FUNCTION
@@ -151,10 +125,8 @@ PHP_MINFO_FUNCTION(http_parser)
  * Every user visible function must have an entry in http_parser_functions[].
  */
 const zend_function_entry http_parser_functions[] = {
-	PHP_FE(confirm_http_parser_compiled,	NULL)		/* For testing, remove later. */
 		PHP_ME(HttpParser, __construct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
 		PHP_ME(HttpParser, __destruct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_DTOR)
-		PHP_ME(HttpParser, on, arg_http_parser_on, ZEND_ACC_PUBLIC)
 		PHP_ME(HttpParser, execute, arg_http_parser_execute, ZEND_ACC_PUBLIC)
 		PHP_FE_END	/* Must be the last line in http_parser_functions[] */
 };
@@ -261,7 +233,7 @@ void hp_object_set(zval *object, void *ptr){
 /* object bind end }}} */
 
 int _on_body_cb(http_parser* parser, const char *at, size_t length){
-	hp_debug("_on_ body_cb() start");
+	hp_debug("_on_body_cb() start");
 	zval *cb;
 	hp_context_t *ctx;
 	zval *instance;
@@ -279,7 +251,7 @@ int _on_body_cb(http_parser* parser, const char *at, size_t length){
 		ctx->done = 1;
 	}
 
-	hp_debug("_on_ body_cb() end");
+	hp_debug("_on_body_cb() end");
 	return 0;
 }
 
@@ -293,12 +265,6 @@ PHP_MINIT_FUNCTION(http_parser)
 	zend_class_entry http_parser;
 	INIT_CLASS_ENTRY(http_parser, "HttpParser", http_parser_functions);
 	http_parser_ce = zend_register_internal_class_ex(&http_parser, NULL, NULL TSRMLS_CC);
-
-	zend_declare_property_null(http_parser_ce, ZEND_STRL("headerCallback"), ZEND_ACC_PRIVATE TSRMLS_CC);
-	zend_declare_property_null(http_parser_ce, ZEND_STRL("bodyCallback"), ZEND_ACC_PRIVATE TSRMLS_CC);
-	zend_declare_property_null(http_parser_ce, ZEND_STRL("errorCallback"), ZEND_ACC_PRIVATE TSRMLS_CC);
-	zend_declare_property_null(http_parser_ce, ZEND_STRL("header"), ZEND_ACC_PRIVATE TSRMLS_CC);
-	zend_declare_property_null(http_parser_ce, ZEND_STRL("body"), ZEND_ACC_PRIVATE TSRMLS_CC);
 
 	hp_object_init();
 
@@ -340,20 +306,20 @@ ZEND_GET_MODULE(http_parser)
 
 
 
-	PHP_METHOD(HttpParser, __construct){
-		hp_debug("HttpParser::__construct() start");
-		hp_context_t *hp_ctx;
-		hp_ctx = (hp_context_t*)emalloc(sizeof(hp_context_t));
-		hp_ctx->done = 0;
-		hp_ctx->this = getThis();
-		hp_buff_init(&hp_ctx->body);
-		hp_buff_init(&hp_ctx->header);
+PHP_METHOD(HttpParser, __construct){
+	hp_debug("HttpParser::__construct() start");
+	hp_context_t *hp_ctx;
+	hp_ctx = (hp_context_t*)emalloc(sizeof(hp_context_t));
+	hp_ctx->done = 0;
+	hp_ctx->this = getThis();
+	hp_buff_init(&hp_ctx->body);
+	hp_buff_init(&hp_ctx->header);
 
-		http_parser_init(&(hp_ctx->parser), HTTP_RESPONSE);
-		hp_ctx->parser.data = hp_ctx;
-		hp_object_set(getThis(), hp_ctx);
-		hp_debug("HttpParser::__construct() end");
-	}
+	http_parser_init(&(hp_ctx->parser), HTTP_RESPONSE);
+	hp_ctx->parser.data = hp_ctx;
+	hp_object_set(getThis(), hp_ctx);
+	hp_debug("HttpParser::__construct() end");
+}
 
 
 PHP_METHOD(HttpParser, __destruct){
@@ -365,30 +331,6 @@ PHP_METHOD(HttpParser, __destruct){
 	hp_buff_dtor(&hp_ctx->header);
 	efree(hp_ctx);
 	hp_debug("HttpParser::__destruct() end");
-}
-
-
-PHP_METHOD(HttpParser, on){
-	hp_debug("HttpParser::on() start");
-	char *event = NULL;
-	int event_len;
-
-	zval *cb;
-	zval *val;
-
-	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz", &event, &event_len, &cb) == FAILURE){
-		WRONG_PARAM_COUNT;
-	}
-
-	if(0 == strncmp(event, "header", strlen("header"))){
-		zend_update_property(Z_OBJCE_P(getThis()), getThis(), ZEND_STRL("headerCallback"), cb TSRMLS_CC);
-	}else if(0 == strncmp(event, "body", strlen("body"))){
-		zend_update_property(Z_OBJCE_P(getThis()), getThis(), ZEND_STRL("bodyCallback"), cb TSRMLS_CC);
-	}else if(0 == strncmp(event, "error", strlen("error"))){
-		zend_update_property(Z_OBJCE_P(getThis()), getThis(), ZEND_STRL("errorCallback"), cb TSRMLS_CC);
-	}
-
-	hp_debug("HttpParser::on() end");
 }
 
 
@@ -414,23 +356,3 @@ PHP_METHOD(HttpParser, execute){
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: noet sw=4 ts=4 fdm=marker
- * vim<600: noet sw=4 ts=4
- */

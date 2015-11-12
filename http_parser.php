@@ -27,10 +27,6 @@ $buffs = array("HTTP/1.1 301 Moved Permanently\r\n"
 function test(){
 	global $buffs;
 	$hp = new HttpParser();
-	$hp->on('body', function($data){
-			});
-
-	
 
 	foreach($buffs as $buff){
 			$hp->execute($buff);
@@ -38,4 +34,4 @@ function test(){
 }
 
 $i=0;
-while($i++<10000){test();}
+while($i++<100000){test();}

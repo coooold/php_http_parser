@@ -36,14 +36,12 @@ $buffs = array("HTTP/1.1 301 Moved Permanently\r\n"
 
 
 $hp = new HttpParser();
-$hp->on('body', function($data){
-	echo $data;
-});
-
-global $buffs;
-
 foreach($buffs as $buff){
-	$hp->execute($buff);
+	$ret = $hp->execute($buff);
+	if($ret !== false){
+		echo $ret;
+		break;
+	}
 }
 ```
 
@@ -81,7 +79,6 @@ class HttpClientFuture implements FutureIntf {
 		
 		$httpParser = new \HttpParser();
 		$httpParser->on('body', function($data)use(&$promise){
-			//echo $data;
 			$promise->accept(['http_data' => $data]);
 		});
 		
@@ -117,5 +114,58 @@ class HttpClientFuture implements FutureIntf {
 ```
 
 
-## 其他
-http_test.php是这个类的纯php版，改写字腾讯tsf框架http client。经测试，c扩展版本解析速度可以达到纯php版的3倍。
+## 性能
+	
+	[web@gz-web01 php_http_parser]$ time /data/server/php/bin/php http_parser.php  2000000
+	
+	real	0m11.489s
+	user	0m11.435s
+	sys	0m0.017s
+	
+1个worker进程
+
+	./http_load -fetches 20000 -parallel 100 9502.listasync 
+	20000 fetches, 100 max parallel, 2.02e+06 bytes, in 5.94536 seconds
+	101 mean bytes/connection
+	3363.97 fetches/sec, 339761 bytes/sec
+	msecs/connect: 0.0473873 mean, 1.155 max, 0.019 min
+	msecs/first-response: 29.6366 mean, 51.736 max, 15.22 min
+	HTTP response codes:
+	code 200 -- 20000
+	-bash: history: write error: Success
+	
+2个worker进程
+
+	./http_load -fetches 20000 -parallel 100 9502.listasync 
+	20000 fetches, 100 max parallel, 2.02e+06 bytes, in 3.17119 seconds
+	101 mean bytes/connection
+	6306.77 fetches/sec, 636984 bytes/sec
+	msecs/connect: 0.0643583 mean, 1.211 max, 0.023 min
+	msecs/first-response: 15.7489 mean, 32.425 max, 3.242 min
+	HTTP response codes:
+	code 200 -- 20000
+	-bash: history: write error: Success
+
+4个woker进程
+
+	./http_load -fetches 20000 -parallel 100 9502.listasync 
+	20000 fetches, 100 max parallel, 2.02e+06 bytes, in 1.57194 seconds
+	101 mean bytes/connection
+	12723.2 fetches/sec, 1.28504e+06 bytes/sec
+	msecs/connect: 0.0815263 mean, 1.349 max, 0.02 min
+	msecs/first-response: 7.65904 mean, 22.568 max, 1.221 min
+	HTTP response codes:
+	code 200 -- 20000
+	-bash: history: write error: Success
+
+8个woker进程
+
+	./http_load -fetches 20000 -parallel 100 9502.listasync 
+	20000 fetches, 100 max parallel, 2.02e+06 bytes, in 1.02967 seconds
+	101 mean bytes/connection
+	19423.8 fetches/sec, 1.9618e+06 bytes/sec
+	msecs/connect: 0.147502 mean, 1.575 max, 0.014 min
+	msecs/first-response: 3.17218 mean, 22.566 max, 0.339 min
+	HTTP response codes:
+	code 200 -- 20000
+	-bash: history: write error: Success
