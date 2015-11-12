@@ -1,20 +1,20 @@
 /*
-  +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
-  +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2015 The PHP Group                                |
-  +----------------------------------------------------------------------+
-  | This source file is subject to version 3.01 of the PHP license,      |
-  | that is bundled with this package in the file LICENSE, and is        |
-  | available through the world-wide-web at the following url:           |
-  | http://www.php.net/license/3_01.txt                                  |
-  | If you did not receive a copy of the PHP license and are unable to   |
-  | obtain it through the world-wide-web, please send a note to          |
-  | license@php.net so we can mail you a copy immediately.               |
-  +----------------------------------------------------------------------+
-  | Author:                                                              |
-  +----------------------------------------------------------------------+
-*/
+   +----------------------------------------------------------------------+
+   | PHP Version 5                                                        |
+   +----------------------------------------------------------------------+
+   | Copyright (c) 1997-2015 The PHP Group                                |
+   +----------------------------------------------------------------------+
+   | This source file is subject to version 3.01 of the PHP license,      |
+   | that is bundled with this package in the file LICENSE, and is        |
+   | available through the world-wide-web at the following url:           |
+   | http://www.php.net/license/3_01.txt                                  |
+   | If you did not receive a copy of the PHP license and are unable to   |
+   | obtain it through the world-wide-web, please send a note to          |
+   | license@php.net so we can mail you a copy immediately.               |
+   +----------------------------------------------------------------------+
+   | Author:                                                              |
+   +----------------------------------------------------------------------+
+   */
 
 /* $Id$ */
 
@@ -35,8 +35,8 @@
 #define hp_debug(s)
 
 /* If you declare any globals in php_http_parser.h uncomment this:
-ZEND_DECLARE_MODULE_GLOBALS(http_parser)
-*/
+   ZEND_DECLARE_MODULE_GLOBALS(http_parser)
+   */
 
 zend_class_entry *http_parser_ce;
 
@@ -44,13 +44,13 @@ zend_class_entry *http_parser_ce;
 static int le_http_parser;
 
 /* {{{ PHP_INI
- */
-/* Remove comments and fill if you need to have entries in php.ini
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("http_parser.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_http_parser_globals, http_parser_globals)
-    STD_PHP_INI_ENTRY("http_parser.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_http_parser_globals, http_parser_globals)
-PHP_INI_END()
 */
+/* Remove comments and fill if you need to have entries in php.ini
+   PHP_INI_BEGIN()
+   STD_PHP_INI_ENTRY("http_parser.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_http_parser_globals, http_parser_globals)
+   STD_PHP_INI_ENTRY("http_parser.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_http_parser_globals, http_parser_globals)
+   PHP_INI_END()
+   */
 /* }}} */
 
 /* Remove the following function when you have successfully modified config.m4
@@ -78,45 +78,45 @@ PHP_FUNCTION(confirm_http_parser_compiled)
    unfold functions in source code. See the corresponding marks just before 
    function definition, where the functions purpose is also documented. Please 
    follow this convention for the convenience of others editing your code.
-*/
+   */
 
 
 /* {{{ php_http_parser_init_globals
- */
-/* Uncomment this function if you have INI entries
-static void php_http_parser_init_globals(zend_http_parser_globals *http_parser_globals)
-{
-	http_parser_globals->global_value = 0;
-	http_parser_globals->global_string = NULL;
-}
 */
+/* Uncomment this function if you have INI entries
+   static void php_http_parser_init_globals(zend_http_parser_globals *http_parser_globals)
+   {
+   http_parser_globals->global_value = 0;
+   http_parser_globals->global_string = NULL;
+   }
+   */
 /* }}} */
 
 
 
-ZEND_BEGIN_ARG_INFO(arg_http_parser_on, 0)
+	ZEND_BEGIN_ARG_INFO(arg_http_parser_on, 0)
 	ZEND_ARG_INFO(0, event)
 	ZEND_ARG_INFO(0, callback)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO(arg_http_parser_execute, 0)
+	ZEND_BEGIN_ARG_INFO(arg_http_parser_execute, 0)
 	ZEND_ARG_INFO(0, buff)
 ZEND_END_ARG_INFO()
 
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
+	/* {{{ PHP_MSHUTDOWN_FUNCTION
+	*/
 PHP_MSHUTDOWN_FUNCTION(http_parser)
 {
 	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
+	   UNREGISTER_INI_ENTRIES();
+	   */
 	return SUCCESS;
 }
 /* }}} */
 
 /* Remove if there's nothing to do at request start */
 /* {{{ PHP_RINIT_FUNCTION
- */
+*/
 PHP_RINIT_FUNCTION(http_parser)
 {
 	return SUCCESS;
@@ -125,7 +125,7 @@ PHP_RINIT_FUNCTION(http_parser)
 
 /* Remove if there's nothing to do at request end */
 /* {{{ PHP_RSHUTDOWN_FUNCTION
- */
+*/
 PHP_RSHUTDOWN_FUNCTION(http_parser)
 {
 	return SUCCESS;
@@ -133,7 +133,7 @@ PHP_RSHUTDOWN_FUNCTION(http_parser)
 /* }}} */
 
 /* {{{ PHP_MINFO_FUNCTION
- */
+*/
 PHP_MINFO_FUNCTION(http_parser)
 {
 	php_info_print_table_start();
@@ -141,8 +141,8 @@ PHP_MINFO_FUNCTION(http_parser)
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
-	DISPLAY_INI_ENTRIES();
-	*/
+	   DISPLAY_INI_ENTRIES();
+	   */
 }
 /* }}} */
 
@@ -152,11 +152,11 @@ PHP_MINFO_FUNCTION(http_parser)
  */
 const zend_function_entry http_parser_functions[] = {
 	PHP_FE(confirm_http_parser_compiled,	NULL)		/* For testing, remove later. */
-	PHP_ME(HttpParser, __construct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
-	PHP_ME(HttpParser, __destruct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_DTOR)
-	PHP_ME(HttpParser, on, arg_http_parser_on, ZEND_ACC_PUBLIC)
-	PHP_ME(HttpParser, execute, arg_http_parser_execute, ZEND_ACC_PUBLIC)
-	PHP_FE_END	/* Must be the last line in http_parser_functions[] */
+		PHP_ME(HttpParser, __construct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+		PHP_ME(HttpParser, __destruct, NULL, ZEND_ACC_PUBLIC|ZEND_ACC_DTOR)
+		PHP_ME(HttpParser, on, arg_http_parser_on, ZEND_ACC_PUBLIC)
+		PHP_ME(HttpParser, execute, arg_http_parser_execute, ZEND_ACC_PUBLIC)
+		PHP_FE_END	/* Must be the last line in http_parser_functions[] */
 };
 /* }}} */
 
@@ -174,6 +174,7 @@ typedef struct {
 	hp_buff body;
 	hp_buff header;
 	zval* this;
+	int done;
 } hp_context_t;
 
 
@@ -229,31 +230,31 @@ static void* hp_object_get(zval *object){
 	int handle = (int) Z_OBJ_HANDLE(*object);
 	assert(handle < hp_object_bind.size);
 	hp_debug("hp_object_get()");
-//printf("object handle %d\n", handle);
+	//printf("object handle %d\n", handle);
 	return hp_object_bind.array[handle];
 }
 
 void hp_object_set(zval *object, void *ptr){
 	int handle = (int) Z_OBJ_HANDLE(*object);
-	
+
 	hp_debug("hp_object_set");
-//printf("object handle %d\n", handle);
+	//printf("object handle %d\n", handle);
 	if(handle >= hp_object_bind.size){
 		uint32_t old_size = hp_object_bind.size;
 		uint32_t new_size = hp_object_bind.size * 2;
-		
+
 		void *old_array = hp_object_bind.array;
 		void *new_array = realloc(old_array, sizeof(void*) * new_size);
-		
+
 		if(!new_array){
 			return;
 		}
 		bzero(new_array + (old_size * sizeof(void*)), (new_size - old_size) * sizeof(void*));
-		
+
 		hp_object_bind.array = new_array;
 		hp_object_bind.size = new_size;
 	}
-	
+
 	hp_object_bind.array[handle] = ptr;
 }
 
@@ -274,47 +275,34 @@ int _on_body_cb(http_parser* parser, const char *at, size_t length){
 
 	hp_buff_concat(&ctx->body, at, length);
 
-	if(http_body_is_final(parser)){
-		MAKE_STD_ZVAL(buff);
-		ZVAL_STRINGL(buff, ctx->body.buff, (int)ctx->body.len, 1);
-		args[0] = &buff;
-
-		cb = zend_read_property(Z_OBJCE_P(instance), instance, ZEND_STRL("bodyCallback"), 1 TSRMLS_DC);
-
-		//char *func_name = NULL; 
-		//if(zend_is_callable(cb, 0, &func_name TSRMLS_CC)){ 
-		if(cb->type != IS_NULL){
-			call_user_function_ex(NULL, NULL, cb, &retval, 1, args, 0, NULL TSRMLS_CC);
-			ret = (int)Z_LVAL_P(retval);
-			zval_ptr_dtor(&retval);
-		}
-		//efree(func_name);
-		zval_ptr_dtor(buff);
+	if(http_body_is_final(&(ctx->parser))){
+		ctx->done = 1;
 	}
+
 	hp_debug("_on_ body_cb() end");
 	return 0;
 }
 
 /* {{{ PHP_MINIT_FUNCTION
- */
+*/
 PHP_MINIT_FUNCTION(http_parser)
 {
 	/* If you have INI entries, uncomment these lines 
-	REGISTER_INI_ENTRIES();
-	*/
+	   REGISTER_INI_ENTRIES();
+	   */
 	zend_class_entry http_parser;
 	INIT_CLASS_ENTRY(http_parser, "HttpParser", http_parser_functions);
 	http_parser_ce = zend_register_internal_class_ex(&http_parser, NULL, NULL TSRMLS_CC);
-	
+
 	zend_declare_property_null(http_parser_ce, ZEND_STRL("headerCallback"), ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_null(http_parser_ce, ZEND_STRL("bodyCallback"), ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_null(http_parser_ce, ZEND_STRL("errorCallback"), ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_null(http_parser_ce, ZEND_STRL("header"), ZEND_ACC_PRIVATE TSRMLS_CC);
 	zend_declare_property_null(http_parser_ce, ZEND_STRL("body"), ZEND_ACC_PRIVATE TSRMLS_CC);
-	
+
 	hp_object_init();
 
-	settings = (http_parser_settings*)pemalloc(sizeof(http_parser_settings), 1);
+	settings = (http_parser_settings*)malloc(sizeof(http_parser_settings));
 	settings->on_message_begin = NULL;
 	settings->on_header_field = NULL;
 	settings->on_header_value = NULL;
@@ -325,13 +313,13 @@ PHP_MINIT_FUNCTION(http_parser)
 	settings->on_message_complete = NULL;
 	settings->on_chunk_header = NULL;
 	settings->on_chunk_complete = NULL;
-	
+
 	return SUCCESS;
 }
 /* }}} */
 
 /* {{{ http_parser_module_entry
- */
+*/
 zend_module_entry http_parser_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"http_parser",
@@ -352,20 +340,20 @@ ZEND_GET_MODULE(http_parser)
 
 
 
-PHP_METHOD(HttpParser, __construct){
-	hp_debug("HttpParser::__construct() start");
-	hp_context_t *hp_ctx;
-	hp_ctx = (hp_context_t*)pemalloc(sizeof(hp_context_t), 1);
+	PHP_METHOD(HttpParser, __construct){
+		hp_debug("HttpParser::__construct() start");
+		hp_context_t *hp_ctx;
+		hp_ctx = (hp_context_t*)malloc(sizeof(hp_context_t));
+		hp_ctx->done = 0;
+		hp_ctx->this = getThis();
+		hp_buff_init(&hp_ctx->body);
+		hp_buff_init(&hp_ctx->header);
 
-	hp_ctx->this = getThis();
-	hp_buff_init(&hp_ctx->body);
-	hp_buff_init(&hp_ctx->header);
-
-	http_parser_init(&(hp_ctx->parser), HTTP_RESPONSE);
-	hp_ctx->parser.data = hp_ctx;
-	hp_object_set(getThis(), hp_ctx);
-	hp_debug("HttpParser::__construct() end");
-}
+		http_parser_init(&(hp_ctx->parser), HTTP_RESPONSE);
+		hp_ctx->parser.data = hp_ctx;
+		hp_object_set(getThis(), hp_ctx);
+		hp_debug("HttpParser::__construct() end");
+	}
 
 
 PHP_METHOD(HttpParser, __destruct){
@@ -375,7 +363,7 @@ PHP_METHOD(HttpParser, __destruct){
 	hp_ctx = (hp_context_t*)hp_object_get(getThis());
 	hp_buff_dtor(&hp_ctx->body);
 	hp_buff_dtor(&hp_ctx->header);
-	pefree(hp_ctx, 1);
+	free(hp_ctx);
 	hp_debug("HttpParser::__destruct() end");
 }
 
@@ -384,14 +372,14 @@ PHP_METHOD(HttpParser, on){
 	hp_debug("HttpParser::on() start");
 	char *event = NULL;
 	int event_len;
-	
+
 	zval *cb;
 	zval *val;
-	
+
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz", &event, &event_len, &cb) == FAILURE){
 		WRONG_PARAM_COUNT;
 	}
-	
+
 	if(0 == strncmp(event, "header", strlen("header"))){
 		zend_update_property(Z_OBJCE_P(getThis()), getThis(), ZEND_STRL("headerCallback"), cb TSRMLS_CC);
 	}else if(0 == strncmp(event, "body", strlen("body"))){
@@ -409,19 +397,22 @@ PHP_METHOD(HttpParser, execute){
 	int buff_len;
 	size_t nparsed;
 	hp_context_t *hp_ctx;
-	
+
 	hp_debug("execute start");
-	
+
 	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &buff, &buff_len) == FAILURE){
 		WRONG_PARAM_COUNT;
 	}
 
 	hp_ctx = (hp_context_t*)hp_object_get(getThis());
 	nparsed = http_parser_execute(&(hp_ctx->parser), settings, buff, (size_t)buff_len);
-	
-	ZVAL_LONG(return_value, nparsed);
 
-	hp_debug("execute end");
+	if(hp_ctx->done){
+		ZVAL_STRINGL(return_value, hp_ctx->body.buff, (int)hp_ctx->body.len, 1);
+	}else{
+		ZVAL_FALSE(return_value);
+	}
+
 }
 
 
@@ -443,4 +434,3 @@ PHP_METHOD(HttpParser, execute){
  * vim600: noet sw=4 ts=4 fdm=marker
  * vim<600: noet sw=4 ts=4
  */
-
