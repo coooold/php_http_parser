@@ -255,6 +255,15 @@ int _on_body_cb(http_parser* parser, const char *at, size_t length){
 	return 0;
 }
 
+int _on_message_complete(http_parser *parser){
+	hp_context_t *ctx;
+	ctx = (hp_context_t*)parser->data;
+	ctx->done = 1;
+	
+	hp_debug("_on_message_complete() end");
+	return 0;
+}
+
 /* {{{ PHP_MINIT_FUNCTION
 */
 PHP_MINIT_FUNCTION(http_parser)
@@ -276,7 +285,7 @@ PHP_MINIT_FUNCTION(http_parser)
 	settings->on_status = NULL;
 	settings->on_body = _on_body_cb;
 	settings->on_headers_complete = NULL;
-	settings->on_message_complete = NULL;
+	settings->on_message_complete = _on_message_complete;
 	settings->on_chunk_header = NULL;
 	settings->on_chunk_complete = NULL;
 
